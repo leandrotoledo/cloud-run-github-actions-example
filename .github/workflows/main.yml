@@ -15,7 +15,7 @@ jobs:
       id-token: "write"
 
     env:
-      IMAGE_NAME: gcr.io/github-actions-example-359201/docker/app
+      IMAGE_NAME: gcr.io/github-actions-example-359201/app
 
     steps:
       - name: Checkout repository
