@@ -1,0 +1,48 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    env:
+      IMAGE_NAME: gcr.io/github-actions-example-359201/docker/app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: projects/958830472274/locations/global/workloadIdentityPools/gh-pool/providers/gh-provider
+          service_account: github-actions-service-account@github-actions-example-359201.iam.gserviceaccount.com
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build Docker image
+        run: docker build backend/ -t $IMAGE_NAME
+
+      - name: Push Docker image
+        run: docker push $IMAGE_NAME
+
+      - id: deploy
+        name: Deploy Docker image
+        uses: "google-github-actions/deploy-cloudrun@v0"
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          region: us-central1
+          service: threers-backend
+
+      - name: Test URL
+        run: curl "${{ steps.deploy.outputs.url }}"
