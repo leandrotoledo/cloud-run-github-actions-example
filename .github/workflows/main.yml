@@ -42,7 +42,7 @@ jobs:
         with:
           image: ${{ env.IMAGE_NAME }}
           region: us-central1
-          service: threers-backend
+          service: app
 
       - name: Test URL
         run: curl "${{ steps.deploy.outputs.url }}"
