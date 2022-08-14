@@ -42,6 +42,9 @@ jobs:
           # Replace with your GitHub Service Account
           service_account: github-actions-service-account@github-actions-example-359201.iam.gserviceaccount.com
 
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
       - name: Build Docker image
         run: docker build . -t $IMAGE_NAME
 
